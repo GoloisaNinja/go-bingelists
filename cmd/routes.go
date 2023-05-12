@@ -17,24 +17,28 @@ func routes() http.Handler {
 	getMedia := http.HandlerFunc(handlers.GetMediaWithAllAttributes)
 	getMediaCategories := http.HandlerFunc(handlers.GetMediaCategories)
 	getCategoryResult := http.HandlerFunc(handlers.GetCategoryResultsByTypeAndPage)
+	searchMedia := http.HandlerFunc(handlers.SearchMedia)
 
 	// TMDB Endpoints
 
 	r.Handle("/api/v1/trending/landing", middleware.Authenticate(getTrendingLanding)).Methods("GET")
-	r.Handle("/api/v1/trending", getTrending).Methods("GET")
-	r.Handle("/api/v1/media", getMedia).Methods("GET")
-	r.Handle("/api/v1/categories", getCategoryResult).Methods("GET")
-	r.Handle("/api/v1/categories/list", getMediaCategories).Methods("GET")
+	r.Handle("/api/v1/trending", middleware.Authenticate(getTrending)).Methods("GET")
+	r.Handle("/api/v1/media", middleware.Authenticate(getMedia)).Methods("GET")
+	r.Handle("/api/v1/categories", middleware.Authenticate(getCategoryResult)).Methods("GET")
+	r.Handle("/api/v1/categories/list", middleware.Authenticate(getMediaCategories)).Methods("GET")
+	r.Handle("/api/v1/search", middleware.Authenticate(searchMedia)).Methods("GET")
 
 	// User Handlers
 
 	createUser := http.HandlerFunc(handlers.CreateNewUser)
 	loginUser := http.HandlerFunc(handlers.LoginUser)
+	logoutUser := http.HandlerFunc(handlers.Logout)
 
 	// User Endpoints
 
 	r.Handle("/api/v1/user/register", middleware.Registration(createUser)).Methods("POST")
 	r.Handle("/api/v1/user/login", loginUser).Methods("POST")
+	r.Handle("/api/v1/user/logout", middleware.Authenticate(logoutUser)).Methods("POST")
 
 	// BingeList Handlers
 	createNewBingeList := http.HandlerFunc(handlers.CreateNewBingeList)

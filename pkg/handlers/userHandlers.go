@@ -99,8 +99,8 @@ func LoginUser(w http.ResponseWriter, r *http.Request) {
 		resp.Respond(w)
 		return
 	}
-	invalidatedAllOldTokens := services.InvalidatedAllOtherUserTokensOnLogin(user.Id.Hex())
-	if !invalidatedAllOldTokens {
+	invalidatedAllTokens := services.InvalidatedAllUserTokens(user.Id.Hex())
+	if !invalidatedAllTokens {
 		resp.Build(500, "internal server error - token invalidation issue", nil)
 		resp.Respond(w)
 		return
@@ -130,5 +130,17 @@ func LoginUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	resp.Build(200, "logged in successfully!", updatedUser)
+	resp.Respond(w)
+}
+func Logout(w http.ResponseWriter, r *http.Request) {
+	var resp responses.Response
+	userId := r.Context().Value("userId").(string)
+	invalidatedTokens := services.InvalidatedAllUserTokens(userId)
+	if !invalidatedTokens {
+		resp.Build(500, "internal server error - token invalidation failed", nil)
+		resp.Respond(w)
+		return
+	}
+	resp.Build(200, "logged out - all tokens expired", nil)
 	resp.Respond(w)
 }

@@ -1,8 +1,8 @@
 package models
 
 type TMDBBaseStruct struct {
-	Movie interface{}
-	Tv    interface{}
+	Movie interface{} `json:"movie"`
+	Tv    interface{} `json:"tv"`
 }
 
 func (t *TMDBBaseStruct) Build(i interface{}, mediaType string) {
@@ -14,10 +14,10 @@ func (t *TMDBBaseStruct) Build(i interface{}, mediaType string) {
 }
 
 type MediaWithAttributes struct {
-	Media     interface{}
-	Credits   interface{}
-	Providers interface{}
-	Similars  interface{}
+	Media     interface{} `json:"media"`
+	Credits   interface{} `json:"credits"`
+	Providers interface{} `json:"providers"`
+	Similars  interface{} `json:"similars"`
 }
 
 func (m *MediaWithAttributes) Build(media, credits, providers, similars interface{}) {

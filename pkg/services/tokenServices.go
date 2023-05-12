@@ -14,7 +14,7 @@ func AddedTokenToCollection(t models.Token) bool {
 	return err == nil
 }
 
-func InvalidatedAllOtherUserTokensOnLogin(userId string) bool {
+func InvalidatedAllUserTokens(userId string) bool {
 	filter := bson.M{"user": userId, "isRevoked": false, "isExpired": false}
 	update := bson.M{"$set": bson.M{"isExpired": true, "isRevoked": true}}
 	_, err := tokenCollection.UpdateMany(context.TODO(), filter, update)

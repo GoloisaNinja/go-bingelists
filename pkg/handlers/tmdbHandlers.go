@@ -2,11 +2,11 @@ package handlers
 
 import (
 	"encoding/json"
-	"fmt"
 	"go-bingelists/pkg/models"
 	"go-bingelists/pkg/responses"
 	"go-bingelists/pkg/util"
 	"net/http"
+	"net/url"
 	"strings"
 )
 
@@ -23,8 +23,6 @@ func trendingByTypeAndPage(mediaType, page string) (*http.Response, error) {
 }
 
 func GetTrendingLanding(w http.ResponseWriter, r *http.Request) {
-	userId := r.Context().Value("userId")
-	fmt.Println(userId)
 	var resp responses.Response
 	mtResp, err := trendingByTypeAndPage("movie", "1")
 	if err != nil {
@@ -48,7 +46,7 @@ func GetTrendingLanding(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetTrending(w http.ResponseWriter, r *http.Request) {
-	mediaType := r.URL.Query().Get("type")
+	mediaType := r.URL.Query().Get("media_type")
 	page := r.URL.Query().Get("page")
 	var resp responses.Response
 	var target interface{}
@@ -189,5 +187,41 @@ func GetCategoryResultsByTypeAndPage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	resp.Build(200, "success", c)
+	resp.Respond(w)
+}
+func SearchMedia(w http.ResponseWriter, r *http.Request) {
+	var resp responses.Response
+	var tvResult *http.Response
+	var result models.TMDBBaseStruct
+	commonParams := "&language=en-US&page=1&include_adult=false&api_key=" + APIKEY
+	q := r.URL.Query().Get("query")
+	query := url.QueryEscape(q)
+	movieResult, err := http.Get(TMDB_BASE_URL + "/search/movie?query=" + query + commonParams)
+	if err != nil {
+		resp.Build(500, "internal server error - movie search request failed", nil)
+		resp.Respond(w)
+		return
+	}
+	tvResult, err = http.Get(TMDB_BASE_URL + "/search/tv?query=" + query + commonParams)
+	if err != nil {
+		resp.Build(500, "internal server error - tv search request failed", nil)
+		resp.Respond(w)
+		return
+	}
+	defer movieResult.Body.Close()
+	defer tvResult.Body.Close()
+	err = json.NewDecoder(movieResult.Body).Decode(&result.Movie)
+	if err != nil {
+		resp.Build(500, "internal server error - could not decode movie results", nil)
+		resp.Respond(w)
+		return
+	}
+	err = json.NewDecoder(tvResult.Body).Decode(&result.Tv)
+	if err != nil {
+		resp.Build(500, "internal server error - could not decode tv results", nil)
+		resp.Respond(w)
+		return
+	}
+	resp.Build(200, "success", result)
 	resp.Respond(w)
 }

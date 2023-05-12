@@ -6,16 +6,14 @@ import (
 )
 
 type MinifiedBingeList struct {
-	ListId  string   `bson:"listId" json:"listId"`
-	OwnerId string   `bson:"ownerId" json:"ownerId"`
-	Name    string   `bson:"name" json:"name"`
-	Movie   []string `bson:"movie" json:"movie"`
-	Tv      []string `bson:"tv" json:"tv"`
+	ListId string   `bson:"listId" json:"id"`
+	Name   string   `bson:"name" json:"name"`
+	Movie  []string `bson:"movie" json:"movie"`
+	Tv     []string `bson:"tv" json:"tv"`
 }
 
-func (mb *MinifiedBingeList) Build(lid, oid, name string) {
+func (mb *MinifiedBingeList) Build(lid, name string) {
 	mb.ListId = lid
-	mb.OwnerId = oid
 	mb.Name = name
 	mb.Movie = make([]string, 0)
 	mb.Tv = make([]string, 0)

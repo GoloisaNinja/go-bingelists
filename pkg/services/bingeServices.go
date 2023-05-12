@@ -22,7 +22,7 @@ func BuildMinifiedBingeSlicesByOwner(owner string) ([]*models.MinifiedBingeList,
 	}
 	for _, list := range lists {
 		var tempList models.MinifiedBingeList
-		tempList.Build(list.Id.Hex(), list.Owner, list.Name)
+		tempList.Build(list.Id.Hex(), list.Name)
 		for _, title := range list.Titles {
 			if title.Type == "movie" {
 				tempList.Movie = append(tempList.Movie, title.MediaId)
