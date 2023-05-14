@@ -26,3 +26,12 @@ func (m *MediaWithAttributes) Build(media, credits, providers, similars interfac
 	m.Providers = providers
 	m.Similars = similars
 }
+
+type GenreItem struct {
+	Id   int    `json:"id"`
+	Name string `json:"name"`
+}
+
+type GenreResponse struct {
+	Genres []*GenreItem `json:"genres"`
+}

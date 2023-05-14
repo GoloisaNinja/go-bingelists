@@ -59,6 +59,14 @@ func AddToFavorites(w http.ResponseWriter, r *http.Request) {
 		resp.Respond(w)
 		return
 	}
+	var genreName string
+	genreName, err = GetGenreNameFromId(mediaItem.Type, mediaItem.PrimaryGenreId)
+	if err != nil {
+		resp.Build(500, "internal server error - problem getting genre from TMDB", nil)
+		resp.Respond(w)
+		return
+	}
+	mediaItem.PrimaryGenreName = genreName
 	filter := bson.M{"owner": owner}
 	update := bson.M{"$push": bson.M{"favorites": mediaItem}}
 	_, err = favoritesCollection.UpdateOne(context.TODO(), filter, update)

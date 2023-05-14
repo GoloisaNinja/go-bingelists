@@ -140,6 +140,14 @@ func AddToBingeList(w http.ResponseWriter, r *http.Request) {
 		resp.Respond(w)
 		return
 	}
+	var genreName string
+	genreName, err = GetGenreNameFromId(mediaItem.Type, mediaItem.PrimaryGenreId)
+	if err != nil {
+		resp.Build(500, "internal server error - problem getting genre from TMDB", nil)
+		resp.Respond(w)
+		return
+	}
+	mediaItem.PrimaryGenreName = genreName
 	filter := bson.M{"_id": listId, "$or": bson.A{bson.M{"owner": owner}, bson.M{"users": owner}}}
 	update := bson.M{"$push": bson.M{"titles": mediaItem}, "$inc": bson.M{"mediaCount": 1}}
 	var result *mongo.UpdateResult

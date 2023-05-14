@@ -22,6 +22,32 @@ func trendingByTypeAndPage(mediaType, page string) (*http.Response, error) {
 	return resp, nil
 }
 
+// utility function to get the genre name from a genre id for building a MediaItem
+
+func GetGenreNameFromId(mediaType string, id int) (string, error) {
+	genreUrl := TMDB_BASE_URL + "/genre/" + mediaType + "/list?api_key=" + APIKEY
+	typeGenres, err := http.Get(genreUrl)
+	if err != nil {
+		return "", err
+	}
+	var genreResult models.GenreResponse
+	err = json.NewDecoder(typeGenres.Body).Decode(&genreResult)
+	if err != nil {
+		return "", err
+	}
+	var result = ""
+	for _, genre := range genreResult.Genres {
+		if genre.Id == id {
+			result = genre.Name
+			break
+		}
+	}
+	if result == "" {
+		result = "unknown"
+	}
+	return result, nil
+}
+
 func GetTrendingLanding(w http.ResponseWriter, r *http.Request) {
 	var resp responses.Response
 	mtResp, err := trendingByTypeAndPage("movie", "1")
