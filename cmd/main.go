@@ -16,7 +16,7 @@ func main() {
 		port = ":5000"
 	}
 	headersOk := handlers.AllowedHeaders([]string{"Content-Type", "X-Requested-With", "Authorization", "Bearer", "Accept", "Accept-Language", "Origin", "Accept-Encoding", "Content-Length", "Referrer", "User-Agent"})
-	originOk := handlers.AllowedOrigins([]string{"http://localhost:3000"})
+	originOk := handlers.AllowedOrigins([]string{"http://localhost:3000", "https://bingelists.netlify.app", "https://bingelists.app"})
 	methodsOk := handlers.AllowedMethods([]string{"PUT", "POST", "GET", "DELETE", "OPTIONS"})
 	srv := &http.Server{
 		Addr:    port,
