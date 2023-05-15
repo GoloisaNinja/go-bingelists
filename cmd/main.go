@@ -12,7 +12,7 @@ import (
 func main() {
 	db.ConnectDB()
 	port := ":" + os.Getenv("PORT")
-	if port == ":" {
+	if port == "" {
 		port = ":5000"
 	}
 	headersOk := handlers.AllowedHeaders([]string{"Content-Type", "X-Requested-With", "Authorization", "Bearer", "Accept", "Accept-Language", "Origin", "Accept-Encoding", "Content-Length", "Referrer", "User-Agent"})
