@@ -4,15 +4,15 @@ import (
 	"encoding/json"
 	"go-bingelists/pkg/models"
 	"go-bingelists/pkg/responses"
-	"go-bingelists/pkg/util"
 	"net/http"
 	"net/url"
+	"os"
 	"strings"
 )
 
 const TMDB_BASE_URL = "https://api.themoviedb.org/3"
 
-var APIKEY = util.GetDotEnv("TMDB_APIKEY")
+var APIKEY = os.Getenv("TMDB_APIKEY")
 
 func trendingByTypeAndPage(mediaType, page string) (*http.Response, error) {
 	resp, err := http.Get(TMDB_BASE_URL + "/trending/" + mediaType + "/week?page=" + page + "&api_key=" + APIKEY)

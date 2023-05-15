@@ -4,15 +4,17 @@ import (
 	"context"
 	"fmt"
 	"go-bingelists/pkg/config"
-	"go-bingelists/pkg/util"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"log"
+	"os"
 	"time"
 )
 
-var prodUri = util.GetDotEnv("MONGO_URI")
-var devUri = util.GetDotEnv("MONGO_DEV_URI")
+// var prodUri = util.GetDotEnv("MONGO_URI")
+// var devUri = util.GetDotEnv("MONGO_DEV_URI")
+var prodUri = os.Getenv("MONGO_URI")
+var devUri = os.Getenv("MONGO_DEV_URI")
 var app config.AppConfig
 
 func ConnectDB() *mongo.Client {
