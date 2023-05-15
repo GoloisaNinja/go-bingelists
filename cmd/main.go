@@ -13,7 +13,7 @@ import (
 var app config.AppConfig
 
 func main() {
-	app.IsProduction = false
+	app.IsProduction = true
 	db.ConnectDB()
 	port := ":" + os.Getenv("PORT")
 	if port == ":" {
