@@ -8,13 +8,13 @@ import (
 	"go-bingelists/pkg/models"
 	"go-bingelists/pkg/responses"
 	"go-bingelists/pkg/services"
-	"go-bingelists/pkg/util"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	options2 "go.mongodb.org/mongo-driver/mongo/options"
 	"golang.org/x/crypto/bcrypt"
 	"log"
 	"net/http"
+	"os"
 	"time"
 )
 
@@ -23,7 +23,7 @@ type JWTCustomClaims struct {
 	jwt.RegisteredClaims
 }
 
-var secret = util.GetDotEnv("JWT_SECRET")
+var secret = os.Getenv("JWT_SECRET")
 
 var usersCollection = db.GetCollection(db.DB, "users")
 var favoritesCollection = db.GetCollection(db.DB, "favorites")

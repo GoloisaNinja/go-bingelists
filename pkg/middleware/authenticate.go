@@ -7,15 +7,15 @@ import (
 	"go-bingelists/pkg/db"
 	"go-bingelists/pkg/models"
 	"go-bingelists/pkg/responses"
-	"go-bingelists/pkg/util"
 	"go.mongodb.org/mongo-driver/bson"
 	"net/http"
+	"os"
 	"regexp"
 )
 
 var tokensCollection = db.GetCollection(db.DB, "tokens")
 
-var secret = util.GetDotEnv("JWT_SECRET")
+var secret = os.Getenv("JWT_SECRET")
 
 func Authenticate(next http.Handler) http.Handler {
 	return http.HandlerFunc(
