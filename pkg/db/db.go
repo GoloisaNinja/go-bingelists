@@ -11,10 +11,10 @@ import (
 	"time"
 )
 
+var app config.AppConfig
+
 var prodUri = util.GetDotEnv("MONGO_URI")
 var devUri = util.GetDotEnv("MONGO_DEV_URI")
-
-var app config.AppConfig
 
 func SetDBConfig(a *config.AppConfig) {
 	app = *a
@@ -22,7 +22,8 @@ func SetDBConfig(a *config.AppConfig) {
 
 func ConnectDB() *mongo.Client {
 	var uriToUse string
-	if app.IsProduction {
+	isProd := true
+	if isProd {
 		uriToUse = prodUri
 	} else {
 		uriToUse = devUri

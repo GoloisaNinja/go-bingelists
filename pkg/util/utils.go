@@ -1,6 +1,7 @@
 package util
 
 import (
+	"fmt"
 	"github.com/joho/godotenv"
 	"go-bingelists/pkg/config"
 	"log"
@@ -14,7 +15,9 @@ func SetUtilConfig(a *config.AppConfig) {
 }
 
 func GetDotEnv(key string) string {
-	if !app.IsProduction {
+	isProd := true
+	if !isProd {
+		fmt.Println(app.IsProduction)
 		err := godotenv.Load(".env")
 		if err != nil {
 			log.Fatal("Error in env load")

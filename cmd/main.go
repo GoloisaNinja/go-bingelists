@@ -15,8 +15,8 @@ var app config.AppConfig
 
 func main() {
 	app.IsProduction = true
-	db.SetDBConfig(&app)
 	util.SetUtilConfig(&app)
+	db.SetDBConfig(&app)
 	db.ConnectDB()
 	port := ":" + os.Getenv("PORT")
 	if port == "" {
