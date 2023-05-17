@@ -11,13 +11,16 @@ import (
 	"time"
 )
 
-var prodUri = util.GetDotEnv("PROD", "MONGO_URI")
-var devUri = util.GetDotEnv("PROD", "MONGO_DEV_URI")
+var prodUri = util.GetDotEnv("MONGO_URI")
+var devUri = util.GetDotEnv("MONGO_DEV_URI")
 
 var app config.AppConfig
 
+func SetDBConfig(a *config.AppConfig) {
+	app = *a
+}
+
 func ConnectDB() *mongo.Client {
-	app.IsProduction = true
 	var uriToUse string
 	if app.IsProduction {
 		uriToUse = prodUri

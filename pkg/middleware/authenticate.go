@@ -15,7 +15,7 @@ import (
 
 var tokensCollection = db.GetCollection(db.DB, "tokens")
 
-var secret = util.GetDotEnv("PROD", "JWT_SECRET")
+var secret = util.GetDotEnv("JWT_SECRET")
 
 func Authenticate(next http.Handler) http.Handler {
 	return http.HandlerFunc(

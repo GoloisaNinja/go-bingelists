@@ -5,6 +5,16 @@ import (
 	"time"
 )
 
+type BingeTitles struct {
+	Name   string       `json:"name"`
+	Titles []*MediaItem `json:"titles"`
+}
+
+func (bt *BingeTitles) Build(n string, t []*MediaItem) {
+	bt.Name = n
+	bt.Titles = t
+}
+
 type MinifiedBingeList struct {
 	ListId string   `bson:"listId" json:"id"`
 	Name   string   `bson:"name" json:"name"`

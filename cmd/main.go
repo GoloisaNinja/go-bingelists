@@ -3,13 +3,20 @@ package main
 import (
 	"fmt"
 	"github.com/gorilla/handlers"
+	"go-bingelists/pkg/config"
 	"go-bingelists/pkg/db"
+	"go-bingelists/pkg/util"
 	"log"
 	"net/http"
 	"os"
 )
 
+var app config.AppConfig
+
 func main() {
+	app.IsProduction = true
+	db.SetDBConfig(&app)
+	util.SetUtilConfig(&app)
 	db.ConnectDB()
 	port := ":" + os.Getenv("PORT")
 	if port == "" {

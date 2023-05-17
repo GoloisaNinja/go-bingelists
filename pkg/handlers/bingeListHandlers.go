@@ -3,6 +3,7 @@ package handlers
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"go-bingelists/pkg/db"
 	"go-bingelists/pkg/models"
 	"go-bingelists/pkg/responses"
@@ -12,6 +13,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 	"io"
 	"net/http"
+	"strconv"
 )
 
 type NewListRequest struct {
@@ -19,6 +21,34 @@ type NewListRequest struct {
 }
 
 var bingelistCollection = db.GetCollection(db.DB, "bingelists")
+
+func parseTitlesBySelectors(titles []*models.MediaItem, typeFilter string, genreFilter int) []*models.MediaItem {
+	var result []*models.MediaItem = make([]*models.MediaItem, 0)
+	evalType := false
+	evalGenre := false
+	if typeFilter != "" {
+		evalType = true
+	}
+	if genreFilter != -1 {
+		evalGenre = true
+	}
+	for _, title := range titles {
+		if evalType && evalGenre {
+			if title.Type == typeFilter && title.PrimaryGenreId == genreFilter {
+				result = append(result, title)
+			}
+		} else if evalType {
+			if title.Type == typeFilter {
+				result = append(result, title)
+			}
+		} else if evalGenre {
+			if title.PrimaryGenreId == genreFilter {
+				result = append(result, title)
+			}
+		}
+	}
+	return result
+}
 
 func CreateNewBingeList(w http.ResponseWriter, r *http.Request) {
 	var resp responses.Response
@@ -86,6 +116,9 @@ func GetBingeList(w http.ResponseWriter, r *http.Request) {
 	var resp responses.Response
 	owner := r.Context().Value("userId").(string)
 	lStr := r.URL.Query().Get("id")
+	typeFilter := r.URL.Query().Get("type")
+	genreFilter := r.URL.Query().Get("genre")
+	var gfToUse int
 	lObj, err := primitive.ObjectIDFromHex(lStr)
 	if err != nil {
 		resp.Build(400, "there was a problem with the list id", nil)
@@ -100,7 +133,26 @@ func GetBingeList(w http.ResponseWriter, r *http.Request) {
 		resp.Respond(w)
 		return
 	}
-	resp.Build(200, "success", list)
+	var titles models.BingeTitles
+	if typeFilter == "" && genreFilter == "" {
+		titles.Build(list.Name, list.Titles)
+		resp.Build(200, "success", titles)
+		resp.Respond(w)
+		return
+	}
+	if genreFilter == "" {
+		gfToUse = -1
+	} else {
+		if s, sErr := strconv.ParseInt(genreFilter, 10, 0); sErr == nil {
+			gfToUse = int(s)
+		} else {
+			gfToUse = -1
+			fmt.Println("couldn't parse genre id")
+		}
+	}
+	filteredTitles := parseTitlesBySelectors(list.Titles, typeFilter, gfToUse)
+	titles.Build(list.Name, filteredTitles)
+	resp.Build(200, "success", titles)
 	resp.Respond(w)
 }
 func GetBingeLists(w http.ResponseWriter, r *http.Request) {

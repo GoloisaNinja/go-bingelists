@@ -12,7 +12,7 @@ import (
 
 const TMDB_BASE_URL = "https://api.themoviedb.org/3"
 
-var APIKEY = util.GetDotEnv("PROD", "TMDB_APIKEY")
+var APIKEY = util.GetDotEnv("TMDB_APIKEY")
 
 func trendingByTypeAndPage(mediaType, page string) (*http.Response, error) {
 	resp, err := http.Get(TMDB_BASE_URL + "/trending/" + mediaType + "/week?page=" + page + "&api_key=" + APIKEY)

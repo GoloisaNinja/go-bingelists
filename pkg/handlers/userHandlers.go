@@ -23,7 +23,7 @@ type JWTCustomClaims struct {
 	jwt.RegisteredClaims
 }
 
-var secret = util.GetDotEnv("PROD", "JWT_SECRET")
+var secret = util.GetDotEnv("JWT_SECRET")
 
 var usersCollection = db.GetCollection(db.DB, "users")
 var favoritesCollection = db.GetCollection(db.DB, "favorites")
