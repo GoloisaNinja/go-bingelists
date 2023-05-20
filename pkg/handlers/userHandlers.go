@@ -24,8 +24,6 @@ type JWTCustomClaims struct {
 	jwt.RegisteredClaims
 }
 
-//var App.JwtSecret = util.GetDotEnv("JWT_SECRET")
-
 func FindUserByCredentials(email, password string, client *mongo.Client) (*models.User, error) {
 	var user models.User
 	filter := bson.M{"email": email}
@@ -149,6 +147,30 @@ func Logout(c *config.Repository) http.HandlerFunc {
 			return
 		}
 		resp.Build(200, "logged out - all tokens expired", nil)
+		resp.Respond(w)
+	}
+}
+
+func GetPublicUsers(c *config.Repository) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		var resp responses.Response
+		uc := db.GetCollection(c.Config.MongoClient, "users")
+		filter := bson.M{"isPrivate": false}
+		opts := options2.Find().SetProjection(bson.D{{"_id", 1}, {"name", 1}, {"isPrivate", 1}})
+		cursor, err := uc.Find(context.TODO(), filter, opts)
+		defer cursor.Close(context.TODO())
+		if err != nil {
+			resp.Build(500, "internal server error - user fetch failed", nil)
+			resp.Respond(w)
+			return
+		}
+		var users []bson.M
+		if err = cursor.All(context.TODO(), &users); err != nil {
+			resp.Build(500, "internal server error - user cursor decode failed", nil)
+			resp.Respond(w)
+			return
+		}
+		resp.Build(200, "success", users)
 		resp.Respond(w)
 	}
 }

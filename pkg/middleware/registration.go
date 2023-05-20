@@ -23,8 +23,8 @@ func isValidEmail(e string) bool {
 	return err == nil
 }
 
-func isExistingUser(email string, client *mongo.Client) bool {
-	filter := bson.M{"email": email}
+func isExistingUser(name, email string, client *mongo.Client) bool {
+	filter := bson.M{"$or": bson.A{bson.M{"email": email}, bson.M{"name": name}}}
 	var existingUser models.User
 	uc := db.GetCollection(client, "users")
 	err := uc.FindOne(context.TODO(), filter).Decode(&existingUser)
@@ -59,9 +59,14 @@ func Registration(c *config.Repository, next http.Handler) http.Handler {
 				return
 			}
 			validEmail := isValidEmail(newReq.Email)
-			exists := isExistingUser(newReq.Email, c.Config.MongoClient)
-			if !validEmail || exists {
-				resp.Build(400, "user or email invalid", nil)
+			if !validEmail {
+				resp.Build(400, "email invalid", nil)
+				resp.Respond(w)
+				return
+			}
+			exists := isExistingUser(newReq.Name, newReq.Email, c.Config.MongoClient)
+			if exists {
+				resp.Build(400, "username or email already exists", nil)
 				resp.Respond(w)
 				return
 			}

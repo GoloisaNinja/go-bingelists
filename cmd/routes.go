@@ -34,12 +34,14 @@ func routes(config *config.Repository) http.Handler {
 	createUser := handlers.CreateNewUser(config)
 	loginUser := handlers.LoginUser(config)
 	logoutUser := handlers.Logout(config)
+	getPublicUsers := handlers.GetPublicUsers(config)
 
 	// User Endpoints
 
 	r.Handle("/api/v1/user/register", middleware.Registration(config, createUser)).Methods("POST")
 	r.Handle("/api/v1/user/login", loginUser).Methods("POST")
 	r.Handle("/api/v1/user/logout", middleware.Authenticate(config, logoutUser)).Methods("POST")
+	r.Handle("/api/v1/user/users", middleware.Authenticate(config, getPublicUsers)).Methods("GET")
 
 	// BingeList Handlers
 	createNewBingeList := handlers.CreateNewBingeList(config)

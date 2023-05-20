@@ -10,22 +10,6 @@ import (
 	"time"
 )
 
-var DataRepo *DataRepository
-
-type DataRepository struct {
-	Config *config.AppConfig
-}
-
-func New(config *config.AppConfig) *DataRepository {
-	return &DataRepository{
-		Config: config,
-	}
-}
-
-func ConfigNewDB(r *DataRepository) {
-	DataRepo = r
-}
-
 func ConnectDB(r *config.Repository) *mongo.Client {
 	var uriToUse string
 	if r.Config.IsProduction {
@@ -49,8 +33,6 @@ func ConnectDB(r *config.Repository) *mongo.Client {
 	fmt.Println("Connected to MongoDB")
 	return client
 }
-
-//var DB *mongo.Client = ConnectDB()
 
 func GetCollection(client *mongo.Client, collectionName string) *mongo.Collection {
 	coll := client.Database("bingelist").Collection(collectionName)

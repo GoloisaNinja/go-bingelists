@@ -10,7 +10,7 @@ import (
 )
 
 func main() {
-	appConfig := config.New(true)
+	appConfig := config.New(false)
 
 	fmt.Println("app Production is: ", appConfig.IsProduction)
 	// Create config repo to be shared through application
