@@ -27,7 +27,7 @@ func New(isProd bool) *AppConfig {
 		MongoDevUri:  getEnv("MONGO_DEV_URI", ""),
 		JwtSecret:    getEnv("JWT_SECRET", ""),
 		ApiKey:       getEnv("TMDB_APIKEY", ""),
-		Port:         getEnv("PORT", ":5000"),
+		Port:         ":" + getEnv("PORT", "5000"),
 	}
 }
 
