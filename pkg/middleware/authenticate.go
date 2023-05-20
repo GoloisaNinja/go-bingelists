@@ -4,20 +4,16 @@ import (
 	"context"
 	"errors"
 	"github.com/golang-jwt/jwt/v5"
+	"go-bingelists/pkg/config"
 	"go-bingelists/pkg/db"
 	"go-bingelists/pkg/models"
 	"go-bingelists/pkg/responses"
-	"go-bingelists/pkg/util"
 	"go.mongodb.org/mongo-driver/bson"
 	"net/http"
 	"regexp"
 )
 
-var tokensCollection = db.GetCollection(db.DB, "tokens")
-
-var secret = util.GetDotEnv("JWT_SECRET")
-
-func Authenticate(next http.Handler) http.Handler {
+func Authenticate(config *config.Repository, next http.Handler) http.Handler {
 	return http.HandlerFunc(
 		func(w http.ResponseWriter, r *http.Request) {
 			var resp responses.Response
@@ -44,7 +40,7 @@ func Authenticate(next http.Handler) http.Handler {
 						authErr := errors.New("unauthorized")
 						return nil, authErr
 					}
-					return []byte(secret), nil
+					return []byte(config.Config.JwtSecret), nil
 				},
 			)
 			if err != nil {
@@ -59,7 +55,8 @@ func Authenticate(next http.Handler) http.Handler {
 			}
 			filter := bson.M{"token": tokenString}
 			var dbToken models.Token
-			err = tokensCollection.FindOne(context.TODO(), filter).Decode(&dbToken)
+			tc := db.GetCollection(config.Config.MongoClient, "tokens")
+			err = tc.FindOne(context.TODO(), filter).Decode(&dbToken)
 			if err != nil {
 				resp.Build(403, "unauthorized token", nil)
 				resp.Respond(w)

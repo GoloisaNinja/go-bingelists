@@ -5,13 +5,13 @@ import (
 	"go-bingelists/pkg/db"
 	"go-bingelists/pkg/models"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
-var bingeListCollection = db.GetCollection(db.DB, "bingelists")
-
-func BuildMinifiedBingeSlicesByOwner(owner string) ([]*models.MinifiedBingeList, error) {
+func BuildMinifiedBingeSlicesByOwner(owner string, client *mongo.Client) ([]*models.MinifiedBingeList, error) {
 	filter := bson.M{"owner": owner}
-	cursor, err := bingeListCollection.Find(context.TODO(), filter)
+	bc := db.GetCollection(client, "bingelists")
+	cursor, err := bc.Find(context.TODO(), filter)
 	if err != nil {
 		return nil, err
 	}

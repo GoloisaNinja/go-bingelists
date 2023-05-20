@@ -2,19 +2,20 @@ package services
 
 import (
 	"context"
+	"go-bingelists/pkg/db"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-func AlreadyExists(collectionName, ownerId, mediaId, mediaType string, listId ...primitive.ObjectID) bool {
+func AlreadyExists(collectionName, ownerId, mediaId, mediaType string, client *mongo.Client, listId ...primitive.ObjectID) bool {
 	var collectionToUse *mongo.Collection
 	var filter bson.M
 	if collectionName == "favorites" {
-		collectionToUse = favoritesCollection
+		collectionToUse = db.GetCollection(client, "favorites")
 		filter = bson.M{"owner": ownerId, "favorites": bson.M{"$elemMatch": bson.M{"mediaId": mediaId, "type": mediaType}}}
 	} else {
-		collectionToUse = bingeListCollection
+		collectionToUse = db.GetCollection(client, "bingelists")
 		var lid primitive.ObjectID
 		if len(listId) > 0 {
 			lid = listId[0]

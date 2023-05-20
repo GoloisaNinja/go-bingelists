@@ -4,29 +4,34 @@ import (
 	"context"
 	"fmt"
 	"go-bingelists/pkg/config"
-	"go-bingelists/pkg/util"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"log"
 	"time"
 )
 
-var app config.AppConfig
+var DataRepo *DataRepository
 
-var prodUri = util.GetDotEnv("MONGO_URI")
-var devUri = util.GetDotEnv("MONGO_DEV_URI")
-
-func SetDBConfig(a *config.AppConfig) {
-	app = *a
+type DataRepository struct {
+	Config *config.AppConfig
 }
 
-func ConnectDB() *mongo.Client {
+func New(config *config.AppConfig) *DataRepository {
+	return &DataRepository{
+		Config: config,
+	}
+}
+
+func ConfigNewDB(r *DataRepository) {
+	DataRepo = r
+}
+
+func ConnectDB(r *config.Repository) *mongo.Client {
 	var uriToUse string
-	isProd := true
-	if isProd {
-		uriToUse = prodUri
+	if r.Config.IsProduction {
+		uriToUse = r.Config.MongoUri
 	} else {
-		uriToUse = devUri
+		uriToUse = r.Config.MongoDevUri
 	}
 	client, err := mongo.NewClient(options.Client().ApplyURI(uriToUse))
 	if err != nil {
@@ -45,7 +50,7 @@ func ConnectDB() *mongo.Client {
 	return client
 }
 
-var DB *mongo.Client = ConnectDB()
+//var DB *mongo.Client = ConnectDB()
 
 func GetCollection(client *mongo.Client, collectionName string) *mongo.Collection {
 	coll := client.Database("bingelist").Collection(collectionName)

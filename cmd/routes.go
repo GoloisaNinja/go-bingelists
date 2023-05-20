@@ -2,73 +2,74 @@ package main
 
 import (
 	"github.com/gorilla/mux"
+	"go-bingelists/pkg/config"
 	"go-bingelists/pkg/handlers"
 	"go-bingelists/pkg/middleware"
 	"net/http"
 )
 
-func routes() http.Handler {
+func routes(config *config.Repository) http.Handler {
 	r := mux.NewRouter()
 
 	// TMDB Handlers
 
-	getTrendingLanding := http.HandlerFunc(handlers.GetTrendingLanding)
-	getTrending := http.HandlerFunc(handlers.GetTrending)
-	getMedia := http.HandlerFunc(handlers.GetMediaWithAllAttributes)
-	getMediaCategories := http.HandlerFunc(handlers.GetMediaCategories)
-	getCategoryResult := http.HandlerFunc(handlers.GetCategoryResultsByTypeAndPage)
-	searchMedia := http.HandlerFunc(handlers.SearchMedia)
+	getTrendingLanding := handlers.GetTrendingLanding(config)
+	getTrending := handlers.GetTrending(config)
+	getMedia := handlers.GetMediaWithAllAttributes(config)
+	getMediaCategories := handlers.GetMediaCategories(config)
+	getCategoryResult := handlers.GetCategoryResultsByTypeAndPage(config)
+	searchMedia := handlers.SearchMedia(config)
 
 	// TMDB Endpoints
 
-	r.Handle("/api/v1/trending/landing", middleware.Authenticate(getTrendingLanding)).Methods("GET")
-	r.Handle("/api/v1/trending", middleware.Authenticate(getTrending)).Methods("GET")
-	r.Handle("/api/v1/media", middleware.Authenticate(getMedia)).Methods("GET")
-	r.Handle("/api/v1/categories", middleware.Authenticate(getCategoryResult)).Methods("GET")
-	r.Handle("/api/v1/categories/list", middleware.Authenticate(getMediaCategories)).Methods("GET")
-	r.Handle("/api/v1/search", middleware.Authenticate(searchMedia)).Methods("GET")
+	r.Handle("/api/v1/trending/landing", middleware.Authenticate(config, getTrendingLanding)).Methods("GET")
+	r.Handle("/api/v1/trending", middleware.Authenticate(config, getTrending)).Methods("GET")
+	r.Handle("/api/v1/media", middleware.Authenticate(config, getMedia)).Methods("GET")
+	r.Handle("/api/v1/categories", middleware.Authenticate(config, getCategoryResult)).Methods("GET")
+	r.Handle("/api/v1/categories/list", middleware.Authenticate(config, getMediaCategories)).Methods("GET")
+	r.Handle("/api/v1/search", middleware.Authenticate(config, searchMedia)).Methods("GET")
 
 	// User Handlers
 
-	createUser := http.HandlerFunc(handlers.CreateNewUser)
-	loginUser := http.HandlerFunc(handlers.LoginUser)
-	logoutUser := http.HandlerFunc(handlers.Logout)
+	createUser := handlers.CreateNewUser(config)
+	loginUser := handlers.LoginUser(config)
+	logoutUser := handlers.Logout(config)
 
 	// User Endpoints
 
-	r.Handle("/api/v1/user/register", middleware.Registration(createUser)).Methods("POST")
+	r.Handle("/api/v1/user/register", middleware.Registration(config, createUser)).Methods("POST")
 	r.Handle("/api/v1/user/login", loginUser).Methods("POST")
-	r.Handle("/api/v1/user/logout", middleware.Authenticate(logoutUser)).Methods("POST")
+	r.Handle("/api/v1/user/logout", middleware.Authenticate(config, logoutUser)).Methods("POST")
 
 	// BingeList Handlers
-	createNewBingeList := http.HandlerFunc(handlers.CreateNewBingeList)
-	deleteBingeList := http.HandlerFunc(handlers.DeleteBingeList)
-	getMinifiedBingeLists := http.HandlerFunc(handlers.GetMinifiedBingeLists)
-	getBingeList := http.HandlerFunc(handlers.GetBingeList)
-	getBingeLists := http.HandlerFunc(handlers.GetBingeLists)
-	addToBingeList := http.HandlerFunc(handlers.AddToBingeList)
-	removeFromBingeList := http.HandlerFunc(handlers.RemoveFromBingeList)
+	createNewBingeList := handlers.CreateNewBingeList(config)
+	deleteBingeList := handlers.DeleteBingeList(config)
+	getMinifiedBingeLists := handlers.GetMinifiedBingeLists(config)
+	getBingeList := handlers.GetBingeList(config)
+	getBingeLists := handlers.GetBingeLists(config)
+	addToBingeList := handlers.AddToBingeList(config)
+	removeFromBingeList := handlers.RemoveFromBingeList(config)
 
 	// BingeList Endpoints
-	r.Handle("/api/v1/bingelist/create", middleware.Authenticate(createNewBingeList)).Methods("POST")
-	r.Handle("/api/v1/bingelist/delete", middleware.Authenticate(deleteBingeList)).Methods("DELETE")
-	r.Handle("/api/v1/bingelists/minified", middleware.Authenticate(getMinifiedBingeLists)).Methods("GET")
-	r.Handle("/api/v1/bingelist", middleware.Authenticate(getBingeList)).Methods("GET")
-	r.Handle("/api/v1/bingelists", middleware.Authenticate(getBingeLists)).Methods("GET")
-	r.Handle("/api/v1/bingelist/add", middleware.Authenticate(addToBingeList)).Methods("POST")
-	r.Handle("/api/v1/bingelist/remove", middleware.Authenticate(removeFromBingeList)).Methods("POST")
+	r.Handle("/api/v1/bingelist/create", middleware.Authenticate(config, createNewBingeList)).Methods("POST")
+	r.Handle("/api/v1/bingelist/delete", middleware.Authenticate(config, deleteBingeList)).Methods("DELETE")
+	r.Handle("/api/v1/bingelists/minified", middleware.Authenticate(config, getMinifiedBingeLists)).Methods("GET")
+	r.Handle("/api/v1/bingelist", middleware.Authenticate(config, getBingeList)).Methods("GET")
+	r.Handle("/api/v1/bingelists", middleware.Authenticate(config, getBingeLists)).Methods("GET")
+	r.Handle("/api/v1/bingelist/add", middleware.Authenticate(config, addToBingeList)).Methods("POST")
+	r.Handle("/api/v1/bingelist/remove", middleware.Authenticate(config, removeFromBingeList)).Methods("POST")
 
 	// Favorite Handlers
-	getFavorites := http.HandlerFunc(handlers.GetFavorites)
-	getMinifiedFavorites := http.HandlerFunc(handlers.GetMinifiedFavorites)
-	addToFavorites := http.HandlerFunc(handlers.AddToFavorites)
-	removeFromFavorites := http.HandlerFunc(handlers.RemoveFromFavorites)
+	getFavorites := handlers.GetFavorites(config)
+	getMinifiedFavorites := handlers.GetMinifiedFavorites(config)
+	addToFavorites := handlers.AddToFavorites(config)
+	removeFromFavorites := handlers.RemoveFromFavorites(config)
 
 	// Favorite Endpoints
-	r.Handle("/api/v1/favorites", middleware.Authenticate(getFavorites)).Methods("GET")
-	r.Handle("/api/v1/favorites/minified", middleware.Authenticate(getMinifiedFavorites)).Methods("GET")
-	r.Handle("/api/v1/favorites/add", middleware.Authenticate(addToFavorites)).Methods("POST")
-	r.Handle("/api/v1/favorites/remove", middleware.Authenticate(removeFromFavorites)).Methods("POST")
+	r.Handle("/api/v1/favorites", middleware.Authenticate(config, getFavorites)).Methods("GET")
+	r.Handle("/api/v1/favorites/minified", middleware.Authenticate(config, getMinifiedFavorites)).Methods("GET")
+	r.Handle("/api/v1/favorites/add", middleware.Authenticate(config, addToFavorites)).Methods("POST")
+	r.Handle("/api/v1/favorites/remove", middleware.Authenticate(config, removeFromFavorites)).Methods("POST")
 
 	return r
 }

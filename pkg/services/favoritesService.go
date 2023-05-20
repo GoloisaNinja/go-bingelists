@@ -5,14 +5,14 @@ import (
 	"go-bingelists/pkg/db"
 	"go-bingelists/pkg/models"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
-var favoritesCollection = db.GetCollection(db.DB, "favorites")
-
-func BuildMinifiedFavorites(ownerId string) (*models.MinifiedFavorite, error) {
+func BuildMinifiedFavorites(ownerId string, client *mongo.Client) (*models.MinifiedFavorite, error) {
 	filter := bson.M{"owner": ownerId}
 	var favorites models.Favorite
-	err := favoritesCollection.FindOne(context.TODO(), filter).Decode(&favorites)
+	fc := db.GetCollection(client, "favorites")
+	err := fc.FindOne(context.TODO(), filter).Decode(&favorites)
 	if err != nil {
 		return nil, err
 	}
