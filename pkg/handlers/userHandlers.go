@@ -156,7 +156,7 @@ func GetPublicUsers(c *config.Repository) http.HandlerFunc {
 		var resp responses.Response
 		uc := db.GetCollection(c.Config.MongoClient, "users")
 		filter := bson.M{"isPrivate": false}
-		opts := options2.Find().SetProjection(bson.D{{"_id", 1}, {"name", 1}, {"isPrivate", 1}})
+		opts := options2.Find().SetProjection(bson.D{{"_id", 1}, {"name", 1}, {"isPrivate", 1}, {"createdAt", 1}})
 		cursor, err := uc.Find(context.TODO(), filter, opts)
 		defer cursor.Close(context.TODO())
 		if err != nil {

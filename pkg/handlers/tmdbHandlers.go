@@ -78,7 +78,7 @@ func GetTrending(c *config.Repository) http.HandlerFunc {
 		page := r.URL.Query().Get("page")
 		var resp responses.Response
 		var target interface{}
-		trendingResp, err := trendingByTypeAndPage(mediaType, c.Config.ApiKey, page)
+		trendingResp, err := trendingByTypeAndPage(mediaType, page, c.Config.ApiKey)
 		if err != nil {
 			resp.Build(500, err.Error(), nil)
 			resp.Respond(w)
