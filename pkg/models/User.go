@@ -23,10 +23,6 @@ func (t *Token) Build(id primitive.ObjectID, tStr, u string, r, e bool) {
 
 // TODO - add binglelist criteria to invite after bingelist model is created
 
-type Invite struct {
-	Id primitive.ObjectID
-}
-
 type User struct {
 	Id        primitive.ObjectID `bson:"_id" json:"_id"`
 	FirstName string             `bson:"name" json:"name"`

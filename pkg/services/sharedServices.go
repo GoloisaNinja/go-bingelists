@@ -26,3 +26,15 @@ func AlreadyExists(collectionName, ownerId, mediaId, mediaType string, client *m
 	err := collectionToUse.FindOne(context.TODO(), filter).Decode(&result)
 	return err == nil
 }
+
+func ValidUser(client *mongo.Client, userId string) bool {
+	uc := db.GetCollection(client, "users")
+	userIdAsObj, err := primitive.ObjectIDFromHex(userId)
+	if err != nil {
+		return false
+	}
+	filter := bson.M{"_id": userIdAsObj}
+	var result bson.M
+	err = uc.FindOne(context.TODO(), filter).Decode(&result)
+	return err == nil
+}

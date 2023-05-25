@@ -73,5 +73,15 @@ func routes(config *config.Repository) http.Handler {
 	r.Handle("/api/v1/favorites/add", middleware.Authenticate(config, addToFavorites)).Methods("POST")
 	r.Handle("/api/v1/favorites/remove", middleware.Authenticate(config, removeFromFavorites)).Methods("POST")
 
+	// Invite Handlers
+	getPendingInvites := handlers.GetPendingInvites(config)
+	createNewInvite := handlers.CreateNewInvite(config)
+	processInvite := handlers.ProcessInvite(config)
+
+	// Invite Endpoints
+	r.Handle("/api/v1/invites", middleware.Authenticate(config, getPendingInvites)).Methods("GET")
+	r.Handle("/api/v1/invites/create", middleware.Authenticate(config, createNewInvite)).Methods("POST")
+	r.Handle("/api/v1/invites/process", middleware.Authenticate(config, processInvite)).Methods("POST")
+
 	return r
 }
