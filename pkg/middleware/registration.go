@@ -4,37 +4,14 @@ import (
 	"context"
 	"encoding/json"
 	"go-bingelists/pkg/config"
-	"go-bingelists/pkg/db"
 	"go-bingelists/pkg/handlers"
 	"go-bingelists/pkg/models"
 	"go-bingelists/pkg/responses"
 	"go-bingelists/pkg/services"
-	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
-	"go.mongodb.org/mongo-driver/mongo"
-	"golang.org/x/crypto/bcrypt"
 	"log"
 	"net/http"
-	"net/mail"
 )
-
-func isValidEmail(e string) bool {
-	_, err := mail.ParseAddress(e)
-	return err == nil
-}
-
-func isExistingUser(name, email string, client *mongo.Client) bool {
-	filter := bson.M{"$or": bson.A{bson.M{"email": email}, bson.M{"name": name}}}
-	var existingUser models.User
-	uc := db.GetCollection(client, "users")
-	err := uc.FindOne(context.TODO(), filter).Decode(&existingUser)
-	return err == nil
-}
-
-func hashPassword(password string) (string, error) {
-	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 10)
-	return string(bytes), err
-}
 
 func Registration(c *config.Repository, next http.Handler) http.Handler {
 	return http.HandlerFunc(
@@ -58,19 +35,19 @@ func Registration(c *config.Repository, next http.Handler) http.Handler {
 				resp.Respond(w)
 				return
 			}
-			validEmail := isValidEmail(newReq.Email)
+			validEmail := services.IsValidEmail(newReq.Email)
 			if !validEmail {
 				resp.Build(400, "email invalid", nil)
 				resp.Respond(w)
 				return
 			}
-			exists := isExistingUser(newReq.Name, newReq.Email, c.Config.MongoClient)
+			exists := services.IsExistingUser(newReq.Name, newReq.Email, c.Config.MongoClient)
 			if exists {
 				resp.Build(400, "username or email already exists", nil)
 				resp.Respond(w)
 				return
 			}
-			hashed, err := hashPassword(newReq.Password)
+			hashed, err := services.HashPassword(newReq.Password)
 			if err != nil {
 				resp.Build(500, "internal server error", nil)
 				resp.Respond(w)

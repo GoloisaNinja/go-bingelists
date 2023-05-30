@@ -35,6 +35,8 @@ func routes(config *config.Repository) http.Handler {
 	loginUser := handlers.LoginUser(config)
 	logoutUser := handlers.Logout(config)
 	getPublicUsers := handlers.GetPublicUsers(config)
+	nameChangeUser := handlers.UserNameChange(config)
+	privacyChangeUser := handlers.UserPrivacyChange(config)
 
 	// User Endpoints
 
@@ -42,6 +44,8 @@ func routes(config *config.Repository) http.Handler {
 	r.Handle("/api/v1/user/login", loginUser).Methods("POST")
 	r.Handle("/api/v1/user/logout", middleware.Authenticate(config, logoutUser)).Methods("POST")
 	r.Handle("/api/v1/user/users", middleware.Authenticate(config, getPublicUsers)).Methods("GET")
+	r.Handle("/api/v1/user/change/name", middleware.Authenticate(config, nameChangeUser)).Methods("POST")
+	r.Handle("/api/v1/user/change/privacy", middleware.Authenticate(config, privacyChangeUser)).Methods("POST")
 
 	// BingeList Handlers
 	createNewBingeList := handlers.CreateNewBingeList(config)

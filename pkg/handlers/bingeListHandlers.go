@@ -54,6 +54,11 @@ func CreateNewBingeList(c *config.Repository) http.HandlerFunc {
 		var resp responses.Response
 		userId := r.Context().Value("userId").(string)
 		rBody, err := io.ReadAll(r.Body)
+		if err != nil {
+			resp.Build(400, "bad request - problem with request body", nil)
+			resp.Respond(w)
+			return
+		}
 		var listReq NewListRequest
 		err = json.Unmarshal(rBody, &listReq)
 		if err != nil {

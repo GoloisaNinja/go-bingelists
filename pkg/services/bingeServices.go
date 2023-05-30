@@ -9,7 +9,7 @@ import (
 )
 
 func BuildMinifiedBingeSlicesByOwner(owner string, client *mongo.Client) ([]*models.MinifiedBingeList, error) {
-	filter := bson.M{"owner": owner}
+	filter := bson.M{"$or": bson.A{bson.M{"owner": owner}, bson.M{"users": owner}}}
 	bc := db.GetCollection(client, "bingelists")
 	cursor, err := bc.Find(context.TODO(), filter)
 	if err != nil {
